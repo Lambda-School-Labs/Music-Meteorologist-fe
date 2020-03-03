@@ -3,21 +3,25 @@ import axios from "axios";
 
 const url = "https://music-meteorology.herokuapp.com/";
 
+const spotifyBaseUrl = "https://api.spotify.com/v1";
+
+const spotifyToken = localStorage.getItem("token");
+
 export const getUsers = () => dispatch => {
   dispatch({
-    type: SpotifyActionTypes.GET_USERS_FETCHING
+    type: SpotifyActionTypes.GET_USER_FETCHING
   });
   axios
     .get(`${url}v1/users`)
     .then(res => {
       dispatch({
-        type: SpotifyActionTypes.GET_USERS_SUCCESS,
+        type: SpotifyActionTypes.GET_USER_SUCCESS,
         payload: res.data
       });
     })
     .catch(err => {
       dispatch({
-        type: SpotifyActionTypes.GET_USERS_FAILURE,
+        type: SpotifyActionTypes.GET_USER_FAILURE,
         payload: err
       });
     });
@@ -30,7 +34,6 @@ export const getCurrentUser = spotifyId => dispatch => {
   axios
     .get(`${url}v1/users/spotify/${spotifyId}`)
     .then(res => {
-      console.log("this is the spotify id", spotifyId);
       dispatch({
         type: SpotifyActionTypes.GET_LOGGED_IN_SUCCESS,
         payload: res.data
@@ -50,11 +53,11 @@ export const getlikedSongs = () => dispatch => {
   });
 
   var config = {
-    headers: { Authorization: "Bearer " + localStorage.getItem("token") }
+    headers: { Authorization: "Bearer " + spotifyToken }
   };
 
   axios
-    .get("https://api.spotify.com/v1/me/tracks?limit=1", config)
+    .get(`${spotifyBaseUrl}/me/tracks?limit=1`, config)
     .then(res => {
       dispatch({
         type: SpotifyActionTypes.GET_LIKEDSONGS_SUCCESS,
@@ -75,11 +78,11 @@ export const getTrackInfo = id => dispatch => {
   });
 
   var config = {
-    headers: { Authorization: "Bearer " + localStorage.getItem("token") }
+    headers: { Authorization: "Bearer " + spotifyToken }
   };
 
   axios
-    .get(`https://api.spotify.com/v1/audio-features/${id}`, config)
+    .get(`${spotifyBaseUrl}/audio-features/${id}`, config)
     .then(res => {
       dispatch({
         type: SpotifyActionTypes.GET_TRACK_INFO_SUCCESS,
@@ -94,17 +97,24 @@ export const getTrackInfo = id => dispatch => {
     });
 };
 
+export const getPlayStatus = status => dispatch => {
+  dispatch({
+    type: SpotifyActionTypes.GET_PLAY_STATUS,
+    payload: status
+  });
+};
+
 export const getSpotifyAccountDetails = () => dispatch => {
   dispatch({
     type: SpotifyActionTypes.GET_SPOTIFY_PRIVATE_ACCOUNT_DETAILS_FETCHING
   });
 
   var config = {
-    headers: { Authorization: "Bearer " + localStorage.getItem("token") }
+    headers: { Authorization: "Bearer " + spotifyToken }
   };
 
   axios
-    .get(`https://api.spotify.com/v1/me`, config)
+    .get(`${spotifyBaseUrl}/me`, config)
     .then(res => {
       if (!("product" in res.data)) {
         res.data.product = "unprovided";
@@ -127,10 +137,10 @@ export const getCurrentSong = () => dispatch => {
     type: SpotifyActionTypes.GET_CURRENT_SONG_FETCHING
   });
   var config = {
-    headers: { Authorization: "Bearer " + localStorage.getItem("token") }
+    headers: { Authorization: "Bearer " + spotifyToken }
   };
   axios
-    .get("https://api.spotify.com/v1/me/player/currently-playing", config)
+    .get(`${spotifyBaseUrl}/me/player/currently-playing`, config)
     .then(res => {
       dispatch({
         type: SpotifyActionTypes.GET_CURRENT_SONG_SUCCESS,
@@ -150,11 +160,6 @@ export const persistUser = (spotifyUser, playlistId) => dispatch => {
   dispatch({
     type: SpotifyActionTypes.PERSIST_USER_FETCHING
   });
-  console.log(
-    "after inital dispatch persist user fetching",
-    spotifyUser,
-    playlistId
-  );
   axios
     .get(`${url}v1/users/spotify/${spotifyUser.id}`)
     .then(res => {
@@ -187,29 +192,20 @@ export const persistUser = (spotifyUser, playlistId) => dispatch => {
       }
     })
     .catch(err => {
-      console.log("inside err persist user", err);
       if (err.message === "Request failed with status code 404") {
-        console.log("spotify user inside persist", spotifyUser, playlistId);
-        axios
-          .post(`${url}v1/users/register`, {
-            email: spotifyUser.email,
-            spotify_user_id: spotifyUser.id,
-            user_spotify_api_key: Math.floor(
-              Math.random() * 99999999999 + 1
-            ).toString(),
-            date_of_birth: "2019-07-29",
-            spotify_product_type: spotifyUser.product,
-            display_name: spotifyUser.display_name,
-            country: spotifyUser.country,
-            profile_image_url: "",
-            spotify_playlist_id: playlistId
-          })
-          .then(res => {
-            /* dispatch({ type: SpotifyActionTypes.PERSIST_USER_SUCCESS, payload: res.data }); */
-          })
-          .catch(err => {
-            /* dispatch({ type: SpotifyActionTypes.PERSIST_USER_SUCCESS, payload: err }); */
-          });
+        axios.post(`${url}v1/users/register`, {
+          email: spotifyUser.email,
+          spotify_user_id: spotifyUser.id,
+          user_spotify_api_key: Math.floor(
+            Math.random() * 99999999999 + 1
+          ).toString(),
+          date_of_birth: "2019-07-29",
+          spotify_product_type: spotifyUser.product,
+          display_name: spotifyUser.display_name,
+          country: spotifyUser.country,
+          profile_image_url: "",
+          spotify_playlist_id: playlistId
+        });
       }
       /* dispatch({ type: SpotifyActionTypes.PERSIST_USER_SUCCESS, payload: err }); */
     });
@@ -221,10 +217,10 @@ export const getSeveralTracks = ids => dispatch => {
     type: SpotifyActionTypes.GET_SEVERAL_TRACKS_FETCHING
   });
   var config = {
-    headers: { Authorization: "Bearer " + localStorage.getItem("token") }
+    headers: { Authorization: "Bearer " + spotifyToken }
   };
   axios
-    .get(`https://api.spotify.com/v1/tracks/?ids=${ids}`, config)
+    .get(`${spotifyBaseUrl}/tracks/?ids=${ids}`, config)
     .then(res => {
       dispatch({
         type: SpotifyActionTypes.GET_SEVERAL_TRACKS_SUCCESS,
@@ -245,7 +241,7 @@ export const createPlaylist = spotifyId => dispatch => {
   });
   var config = {
     headers: {
-      Authorization: "Bearer " + localStorage.getItem("token"),
+      Authorization: "Bearer " + spotifyToken,
       "Content-Type": "application/json"
     }
   };
@@ -255,14 +251,10 @@ export const createPlaylist = spotifyId => dispatch => {
   };
   axios
     .post(
-      `https://api.spotify.com/v1/users/${spotifyId}/playlists`,
+      `${spotifyBaseUrl}/users/${spotifyId}/playlists`,
       playlistName,
       config
     )
-    //   console.log('CREATE PLAYLIST ACTION RES PAYLOAD', res.data);
-    //   axios.put(`${url}v1/users/spotify/${res.data.owner.id}`, {
-    //     spotify_playlist_id: res.data.id,
-    //   });
 
     .then(res => {
       dispatch({
@@ -284,11 +276,11 @@ export const getPlaylist = playlistId => dispatch => {
   });
 
   var config = {
-    headers: { Authorization: "Bearer " + localStorage.getItem("token") }
+    headers: { Authorization: "Bearer " + spotifyToken }
   };
 
   axios
-    .get(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, config)
+    .get(`${spotifyBaseUrl}/playlists/${playlistId}/tracks`, config)
     .then(res => {
       dispatch({
         type: SpotifyActionTypes.GET_PLAYLIST_SUCCESS,
@@ -309,16 +301,12 @@ export const addToPlaylist = (songs, playlistId) => dispatch => {
   });
 
   var config = {
-    headers: { Authorization: "Bearer " + localStorage.getItem("token") },
+    headers: { Authorization: "Bearer " + spotifyToken },
     "Content-Type": "application/json"
   };
 
   axios
-    .post(
-      `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
-      songs,
-      config
-    )
+    .post(`${spotifyBaseUrl}/playlists/${playlistId}/tracks`, songs, config)
     .then(res => {
       dispatch({
         type: SpotifyActionTypes.ADD_TO_PLAYLIST_SUCCESS,
@@ -339,9 +327,9 @@ export const removeTrack = (playlistId, currentlyPlayingSong) => dispatch => {
   });
   axios({
     method: "delete",
-    url: `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
+    url: `${spotifyBaseUrl}/playlists/${playlistId}/tracks`,
     headers: {
-      Authorization: "Bearer " + localStorage.getItem("token"),
+      Authorization: "Bearer " + spotifyToken,
       "Content-Type": "application/json"
     },
     data: {
@@ -373,9 +361,9 @@ export const saveLikedSong = songId => dispatch => {
 
   axios({
     method: "put",
-    url: `https://api.spotify.com/v1/me/tracks?ids=${songId}`,
+    url: `${spotifyBaseUrl}/me/tracks?ids=${songId}`,
     headers: {
-      Authorization: "Bearer " + localStorage.getItem("token"),
+      Authorization: "Bearer " + spotifyToken,
       "Content-Type": "application/json"
     }
   })
@@ -392,3 +380,4 @@ export const saveLikedSong = songId => dispatch => {
       });
     });
 };
+

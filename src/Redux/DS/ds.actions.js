@@ -7,11 +7,9 @@ export const postDSSong = obj => dispatch => {
   dispatch({
     type: DsActionTypes.POST_DS_SONGS_FETCHING
   });
-  console.log("OBJ passed into postDSSong", JSON.stringify(obj));
   axios
     .post(`${url}/request`, obj)
     .then(res => {
-      console.log("success postDSSong");
       if (
         res.data.songs !== undefined &&
         res.data.songs !== null &&
@@ -25,19 +23,6 @@ export const postDSSong = obj => dispatch => {
             JSON.stringify(JSON.parse(previous_ds_songs).concat(res.data.songs))
           );
 
-          /*    localStorage.setItem(
-              'ds_songs',
-              JSON.stringify([
-                ...new Set(
-                  JSON.parse(previous_ds_songs)
-                    .concat(res.data.songs)
-                    .map(song => ({
-                      similarity: song.similarity,
-                      values: song.values,
-                    })),
-                ),
-              ]),
-            ); */
         } else {
           localStorage.setItem("ds_songs", JSON.stringify(res.data.songs));
         }
@@ -54,3 +39,4 @@ export const postDSSong = obj => dispatch => {
       });
     });
 };
+

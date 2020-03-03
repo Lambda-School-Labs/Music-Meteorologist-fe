@@ -1,34 +1,32 @@
 import SpotifyActionTypes from '../Spotify/spotify.types'
 
 const initialState = {
-  users: [],
-  fetchingUsers: false,
-  fetchingUsersError: '',
+  fetchingUser: false,
+  fetchingUserError: '',
   spotifyUser: [],
   fetchingSpotifyUser: false,
   fetchingSpotifyUserError: '',
 };
 
-const getUsersReducer = (state = initialState, action) => {
+const getUserReducer = (state = initialState, action) => {
   switch (action.type) {
-    case SpotifyActionTypes.GET_USERS_FETCHING:
+    case SpotifyActionTypes.GET_USER_FETCHING:
       return {
         ...state,
-        fetchingUsers: true,
-        fetchingUsersError: '',
+        fetchingUser: true,
+        fetchingUserError: '',
       };
-    case SpotifyActionTypes.GET_USERS_SUCCESS:
+    case SpotifyActionTypes.GET_USER_SUCCESS:
       return {
         ...state,
-        users: action.payload.users,
-        fetchingUsers: false,
-        fetchingUsersError: '',
+        fetchingUser: false,
+        fetchingUserError: '',
       };
-    case SpotifyActionTypes.GET_USERS_FAILURE:
+    case SpotifyActionTypes.GET_USER_FAILURE:
       return {
         ...state,
-        fetchingUsers: false,
-        fetchingUsersError: action.payload,
+        fetchingUser: false,
+        fetchingUserError: action.payload,
       };
     case SpotifyActionTypes.GET_SPOTIFY_PRIVATE_ACCOUNT_DETAILS_FETCHING:
       return {
@@ -66,4 +64,4 @@ const getUsersReducer = (state = initialState, action) => {
   }
 };
 
-export default getUsersReducer;
+export default getUserReducer;

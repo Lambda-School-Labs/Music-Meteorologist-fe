@@ -24,7 +24,13 @@ Sentry.init({
   dsn: "https://d1fc669b08fb4d33b336f1b64a48ae5b@sentry.io/1537793"
 });
 
-const store = createStore(rootReducer, applyMiddleware(thunk, logger));
+let store = null;
+
+if (process.env.NODE_ENV === "development") {
+  store = createStore(rootReducer, applyMiddleware(logger, thunk));
+} else {
+  store = createStore(rootReducer, applyMiddleware(thunk));
+}
 
 ReactDOM.render(
   <Provider store={store}>

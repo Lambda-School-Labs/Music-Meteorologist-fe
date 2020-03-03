@@ -1,23 +1,29 @@
-import SpotifyActionTypes from '../Spotify/spotify.types'
+import SpotifyActionTypes from "../Spotify/spotify.types";
 
-const initialState = {};
+const initialState = {
+  trackFetching: null,
+  trackFetched: null,
+  err: null
+};
 
 const getTrackInfoReducer = (state = initialState, action) => {
   switch (action.type) {
     case SpotifyActionTypes.GET_TRACK_INFO_FETCHING:
       return {
         ...state,
-        ...action.payload
+        trackFetching: true
       };
     case SpotifyActionTypes.GET_TRACK_INFO_SUCCESS:
       return {
         ...state,
-        ...action.payload
+        ...action.payload,
+        trackFetching: false,
+        trackFetched: true
       };
     case SpotifyActionTypes.GET_TRACK_INFO_FAILURE:
       return {
         ...state,
-        ...action.payload
+        err: action.payload
       };
     default:
       return state;
@@ -25,3 +31,4 @@ const getTrackInfoReducer = (state = initialState, action) => {
 };
 
 export default getTrackInfoReducer;
+

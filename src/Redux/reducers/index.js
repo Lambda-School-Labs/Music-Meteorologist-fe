@@ -1,17 +1,17 @@
-import { combineReducers } from 'redux';
-import getUsersReducer from './usersReducer';
-import likedSongsReducer from './likedSongsReducer';
-import getTrackInfoReducer from './getTrackInfoReducer';
-import currentSongReducer from './getCurrentSongReducer';
-import queueReducer from './queueReducer';
-import createPlaylistReducer from './createPlaylistReducer';
-import getPlaylistReducer from './getPlaylistReducer';
-import getCurrentUserReducer from './getCurrentUserReducer';
-import addToPlaylistReducer from './addToPlaylistReducer';
-import removeTrackReducer from './removeTrackReducer';
+import { combineReducers } from "redux";
+import getUserReducer from "./userReducer";
+import likedSongsReducer from "./likedSongsReducer";
+import getTrackInfoReducer from "./getTrackInfoReducer";
+import currentSongReducer from "./getCurrentSongReducer";
+import queueReducer from "./queueReducer";
+import createPlaylistReducer from "./createPlaylistReducer";
+import getPlaylistReducer from "./getPlaylistReducer";
+import getCurrentUserReducer from "./getCurrentUserReducer";
+import addToPlaylistReducer from "./addToPlaylistReducer";
+import removeTrackReducer from "./removeTrackReducer";
 
 export default combineReducers({
-  getUsersReducer,
+  getUserReducer,
   likedSongsReducer,
   getTrackInfoReducer,
   currentSongReducer,
@@ -20,5 +20,6 @@ export default combineReducers({
   getPlaylistReducer,
   getCurrentUserReducer,
   addToPlaylistReducer,
-  removeTrackReducer,
+  removeTrackReducer
 });
+

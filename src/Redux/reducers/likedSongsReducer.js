@@ -1,11 +1,12 @@
-import SpotifyActionTypes from '../Spotify/spotify.types'
+import SpotifyActionTypes from "../Spotify/spotify.types";
 
 const initialState = {
-  song_id: '',
+  song_id: "",
   fetchingLikedSongs: false,
-  fetchingLikedSongsError: '',
+  fetchingLikedSongsError: "",
   savingLike: false,
-  putLikeError: ''
+  putLikeError: "",
+  likedSongs: []
 };
 
 const likedSongsReducer = (state = initialState, action) => {
@@ -14,14 +15,14 @@ const likedSongsReducer = (state = initialState, action) => {
       return {
         ...state,
         fetchingLikedSongs: true,
-        fetchingLikedSongsError: ''
+        fetchingLikedSongsError: ""
       };
     case SpotifyActionTypes.GET_LIKEDSONGS_SUCCESS:
       return {
         ...state,
         song_id: action.payload,
         fetchingLikedSongs: false,
-        fetchingLikedSongsError: ''
+        fetchingLikedSongsError: ""
       };
     case SpotifyActionTypes.GET_LIKEDSONGS_FAILURE:
       return {

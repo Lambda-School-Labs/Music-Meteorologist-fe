@@ -8,12 +8,13 @@ import {
 } from "../../Redux/Spotify/spotify.actions";
 import Song from "./Song.js";
 
+import axios from "axios";
+
 class LikedSongs extends React.Component {
   state = {
     getList: false
   };
   componentDidMount() {
-    // this.props.getlikedSongs();
     this.props.getUsers();
   }
 
@@ -29,27 +30,53 @@ class LikedSongs extends React.Component {
     }
   }
 
-  render() {
-    console.log("liked songs props", this.props);
-    console.log("liked songs state", this.state);
+  playSong = (trackUris, songUri) => {
+    let songIndex = null;
+    for (let i = 0; i < trackUris.length; i++) {
+      if (trackUris[i] === songUri) {
+        songIndex = i;
+        break;
+      }
+    }
 
-    console.log();
-    if (this.props.fetchingLikedSongs) {
+    const newPlaylist = trackUris
+      .slice(songIndex)
+      .concat(trackUris.slice(0, songIndex));
+
+    axios.put(
+      `https://api.spotify.com/v1/me/player/play?device_id=${this.props.deviceId}`,
+      {
+        uris: newPlaylist
+      },
+      {
+        headers: { Authorization: "Bearer " + localStorage.getItem("token") }
+      }
+    );
+  };
+
+  render() {
+    const { several_tracks, deviceId, fetchingLikedSongs } = this.props;
+
+    if (fetchingLikedSongs) {
       return <h1>Loading...</h1>;
     }
     return (
       <Grid container>
         <Grid id="songLD" item>
-          {this.props.several_tracks.tracks ? 
-            this.props.several_tracks.tracks.map(song => (
+          {several_tracks.tracks ? (
+            several_tracks.tracks.map(song => (
               <Song
                 song={song}
                 id={song.id}
                 key={song.id}
-                deviceId={this.props.deviceId}
-                tracks={this.props.several_tracks.tracks}
+                deviceId={deviceId}
+                tracks={several_tracks.tracks.map(track => track.uri)}
+                playSong={this.playSong}
               />
-            )) : <h1>Loading...</h1>}
+            ))
+          ) : (
+              <h1>Loading...</h1>
+            )}
         </Grid>
       </Grid>
     );
@@ -57,8 +84,8 @@ class LikedSongs extends React.Component {
 }
 
 const mapStateToProps = state => ({
-  songs: state.likedSongsReducer,
-  spotifyUser: state.getUsersReducer.spotifyUser,
+  currentSong: state.currentSongReducer.item,
+  spotifyUser: state.getUserReducer.spotifyUser,
   several_tracks: state.queueReducer.several_tracks,
   playlistTracks: state.getPlaylistReducer,
   playlistId: state.createPlaylistReducer,
