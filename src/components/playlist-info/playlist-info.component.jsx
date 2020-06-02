@@ -87,8 +87,7 @@ class PlaylistInfo extends React.Component {
 
 const mapStateToProps = state => ({
 	currentUser: state.currentUser.currentUser,
-	spotifyUris: state.spotifyUris,
-	currentUser: state.currentUser.currentUser
+	spotifyUris: state.spotifyUris
 });
 
 export default connect(mapStateToProps, {})(PlaylistInfo);
