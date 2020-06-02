@@ -8,24 +8,27 @@ import { createBrowserHistory } from "history";
 import { Router } from "react-router-dom";
 import "./index.css";
 import App from "./App";
+import { composeWithDevTools } from "redux-devtools-extension/logOnlyInProduction";
 
 import rootReducer from "./redux/reducers";
 
 const history = createBrowserHistory();
-
 let store = null;
 
 if (process.env.NODE_ENV === "development") {
-  store = createStore(rootReducer, applyMiddleware(logger, thunk));
+	store = createStore(
+		rootReducer,
+		composeWithDevTools(applyMiddleware(logger, thunk))
+	);
 } else {
-  store = createStore(rootReducer, applyMiddleware(thunk));
+	store = createStore(rootReducer, applyMiddleware(thunk));
 }
 
 ReactDOM.render(
-  <Provider store={store}>
-    <Router history={history}>
-      <App />
-    </Router>
-  </Provider>,
-  document.getElementById("root")
+	<Provider store={store}>
+		<Router history={history}>
+			<App />
+		</Router>
+	</Provider>,
+	document.getElementById("root")
 );
